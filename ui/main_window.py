@@ -1,11 +1,12 @@
 # Arquivo: ui/main_window.py
 
-from PyQt6.QtWidgets import QMainWindow, QLabel, QComboBox, QWidget, QVBoxLayout, QHBoxLayout, QFrame
+from PyQt6.QtWidgets import QMainWindow, QLabel, QComboBox, QWidget, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QMessageBox
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
 import os
 
 from core.data_analyzer import AnalisadorDados
+from ui.data_window import DataWindow
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -29,19 +30,35 @@ class MainWindow(QMainWindow):
         # Aplica o estilo na janela principal e nos widgets
         self.setStyleSheet("""
             QMainWindow {
-                background-color: #333; /* Fundo escuro para a janela principal */
+                background-color: #000;
             }
             QLabel {
-                color: black;
                 background-color: transparent;
+                color: white;
             }
             QComboBox {
-                background-color: #555;
+                background-color: #333;
                 color: white;
+                font-size: 18px;
+                padding: 10px 15px;
+                border-radius: 5px;
             }
             QComboBox QAbstractItemView {
+                background-color: #333;
+                color: white;
+            }
+            QPushButton {
                 background-color: #555;
                 color: white;
+                font-size: 18px;
+                padding: 10px 15px;
+                border: none;
+                border-radius: 5px;
+            }
+            QFrame {
+                background-color: #333;
+                border-radius: 10px;
+                padding: 10px;
             }
         """)
 
@@ -49,9 +66,8 @@ class MainWindow(QMainWindow):
         
         # Frame para o Mapa
         self.frame_mapa = QFrame(self.central_widget)
-        self.frame_mapa.setStyleSheet("background-color: #E0E0E0; border-radius: 10px; padding: 10px;")
         self.layout_mapa = QVBoxLayout(self.frame_mapa)
-        self.layout_principal.addWidget(self.frame_mapa)
+        self.layout_principal.addWidget(self.frame_mapa, alignment=Qt.AlignmentFlag.AlignCenter)
         
         # Imagem do mapa de Sergipe
         self.mapa_label = QLabel()
@@ -59,59 +75,67 @@ class MainWindow(QMainWindow):
         caminho_mapa = os.path.join('assets', 'mapa_sergipe.jpg')
         if os.path.exists(caminho_mapa):
             pixmap_mapa = QPixmap(caminho_mapa)
-            self.mapa_label.setPixmap(pixmap_mapa.scaled(600, 400, Qt.AspectRatioMode.KeepAspectRatio))
+            self.mapa_label.setPixmap(pixmap_mapa.scaled(600, 500, Qt.AspectRatioMode.KeepAspectRatio))
         else:
             self.mapa_label.setText("Mapa de Sergipe não encontrado na pasta 'assets'.")
         
         self.layout_mapa.addWidget(self.mapa_label)
+        
+        # Layout horizontal para a combobox e o botão
+        self.layout_botoes = QHBoxLayout()
+        self.layout_botoes.addStretch()
         
         # ComboBox para a lista de cidades
         self.buscar_cidade_combo = QComboBox()
         self.buscar_cidade_combo.setPlaceholderText("Selecione uma cidade")
         self.buscar_cidade_combo.addItems(self.analisador.obter_lista_municipios())
         self.buscar_cidade_combo.setEditable(False)
+        self.buscar_cidade_combo.setFixedWidth(450)
+        self.layout_botoes.addWidget(self.buscar_cidade_combo)
         
-        layout_combobox = QHBoxLayout()
-        layout_combobox.addStretch()
-        layout_combobox.addWidget(self.buscar_cidade_combo)
-        layout_combobox.addStretch()
-        self.layout_principal.addLayout(layout_combobox)
+        # Botão para sair da aplicação
+        self.sair_button = QPushButton("Sair")
+        self.sair_button.setFixedWidth(100)
+        self.layout_botoes.addWidget(self.sair_button)
         
-        # Frame para os Dados
-        self.frame_dados = QFrame(self.central_widget)
-        self.frame_dados.setStyleSheet("background-color: #E0E0E0; border-radius: 10px; padding: 10px;")
-        self.layout_dados = QVBoxLayout(self.frame_dados)
-        self.layout_principal.addWidget(self.frame_dados)
+        self.layout_botoes.addStretch()
         
-        # Rótulos para exibir os dados
-        self.municipio_label = QLabel("Município: ")
-        self.mortes_label = QLabel("Mortes: ")
-        self.casos_label = QLabel("Casos: ")
-        self.letalidade_label = QLabel("Letalidade: ")
-
-        self.layout_dados.addWidget(self.municipio_label)
-        self.layout_dados.addWidget(self.mortes_label)
-        self.layout_dados.addWidget(self.casos_label)
-        self.layout_dados.addWidget(self.letalidade_label)
-        
+        self.layout_principal.addLayout(self.layout_botoes)
         self.layout_principal.addStretch()
         
-        # 4. Conecta o evento da ComboBox ao método de exibição
-        self.buscar_cidade_combo.currentIndexChanged.connect(self.mostrar_dados_cidade)
+        # Variável para a janela de dados
+        self.data_window = None
 
-    def mostrar_dados_cidade(self):
-        """Método que atualiza os rótulos com os dados da cidade selecionada."""
+        # 4. Conecta os eventos dos widgets aos métodos
+        self.buscar_cidade_combo.currentIndexChanged.connect(self.abrir_janela_dados)
+        self.sair_button.clicked.connect(self.mostrar_aviso_saida)
+
+    def mostrar_aviso_saida(self):
+        # Cria a janela de aviso
+        aviso = QMessageBox()
+        aviso.setWindowTitle("Aviso")
+        aviso.setText("Você tem certeza que deseja sair?")
+        aviso.setIcon(QMessageBox.Icon.Question)
+        aviso.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        aviso.setDefaultButton(QMessageBox.StandardButton.No)
+
+        # Mapeia a cor do tema para a janela de aviso
+        aviso.setStyleSheet("background-color: #333; color: white;")
+
+        # Executa a janela e pega a resposta
+        resposta = aviso.exec()
+
+        # Se a resposta for "Sim", fecha a aplicação
+        if resposta == QMessageBox.StandardButton.Yes:
+            self.close()
+            
+    def abrir_janela_dados(self):
         nome_cidade = self.buscar_cidade_combo.currentText()
         if nome_cidade:
             dados = self.analisador.obter_dados_completos(nome_cidade)
             
             if dados:
-                self.municipio_label.setText(f"Município: {nome_cidade}")
-                self.mortes_label.setText(f"Mortes: {dados.mortes:,}".replace(",", "."))
-                self.casos_label.setText(f"Casos: {dados.casos:,}".replace(",", "."))
-                self.letalidade_label.setText(f"Letalidade: {dados.letalidade}%")
+                self.data_window = DataWindow(nome_cidade, dados)
+                self.data_window.show()
             else:
-                self.municipio_label.setText("Dados não encontrados.")
-                self.mortes_label.setText("")
-                self.casos_label.setText("")
-                self.letalidade_label.setText("")
+                print("Dados não encontrados para a cidade selecionada.")

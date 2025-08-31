@@ -1,10 +1,12 @@
 # Arquivo: core/data_model.py
 
 class DadosCovid:
-    def __init__(self, mortes: int, casos: int, letalidade: float):
+    def __init__(self, mortes: int, casos: int, letalidade: float, mortes_por_100_mil_habitantes: float, casos_por_100_mil_habitantes: float):
         self.mortes = mortes
         self.casos = casos
         self.letalidade = letalidade
+        self.mortes_por_100_mil_habitantes = mortes_por_100_mil_habitantes
+        self.casos_por_100_mil_habitantes = casos_por_100_mil_habitantes
 
     def __repr__(self):
         return f"<DadosCovid mortes={self.mortes} casos={self.casos} letalidade={self.letalidade}%>"
