@@ -1,7 +1,7 @@
 # Arquivo: core/data_analyzer.py
 
 import os # Para verificar se o arquivo existe
-from ..core.data_model import Municipio, DadosCovid
+from .data_model import Municipio, DadosCovid
 
 class AnalisadorDados:
     def __init__(self):
