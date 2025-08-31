@@ -1,6 +1,6 @@
 # Arquivo: ui/main_window.py
 
-from PyQt6.QtWidgets import QMainWindow, QLabel, QComboBox, QWidget, QVBoxLayout, QHBoxLayout
+from PyQt6.QtWidgets import QMainWindow, QLabel, QComboBox, QWidget, QVBoxLayout, QHBoxLayout, QFrame
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
 import os
@@ -15,7 +15,6 @@ class MainWindow(QMainWindow):
         self.analisador = AnalisadorDados()
         
         # Carrega os dados na inicialização
-        # O caminho do arquivo é relativo à pasta do projeto
         caminho_dados = os.path.join('data', 'DadosCovidSergipe.txt')
         self.analisador.carregar_dados(caminho_dados)
         
@@ -27,7 +26,32 @@ class MainWindow(QMainWindow):
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
         
+        # Aplica o estilo na janela principal e nos widgets
+        self.setStyleSheet("""
+            QMainWindow {
+                background-color: #333; /* Fundo escuro para a janela principal */
+            }
+            QLabel {
+                color: black;
+                background-color: transparent;
+            }
+            QComboBox {
+                background-color: #555;
+                color: white;
+            }
+            QComboBox QAbstractItemView {
+                background-color: #555;
+                color: white;
+            }
+        """)
+
         self.layout_principal = QVBoxLayout(self.central_widget)
+        
+        # Frame para o Mapa
+        self.frame_mapa = QFrame(self.central_widget)
+        self.frame_mapa.setStyleSheet("background-color: #E0E0E0; border-radius: 10px; padding: 10px;")
+        self.layout_mapa = QVBoxLayout(self.frame_mapa)
+        self.layout_principal.addWidget(self.frame_mapa)
         
         # Imagem do mapa de Sergipe
         self.mapa_label = QLabel()
@@ -39,20 +63,13 @@ class MainWindow(QMainWindow):
         else:
             self.mapa_label.setText("Mapa de Sergipe não encontrado na pasta 'assets'.")
         
+        self.layout_mapa.addWidget(self.mapa_label)
+        
         # ComboBox para a lista de cidades
         self.buscar_cidade_combo = QComboBox()
         self.buscar_cidade_combo.setPlaceholderText("Selecione uma cidade")
         self.buscar_cidade_combo.addItems(self.analisador.obter_lista_municipios())
         self.buscar_cidade_combo.setEditable(False)
-        
-        # Rótulos para exibir os dados
-        self.municipio_label = QLabel("Município: ")
-        self.mortes_label = QLabel("Mortes: ")
-        self.casos_label = QLabel("Casos: ")
-        self.letalidade_label = QLabel("Letalidade: ")
-        
-        # 4. Adiciona os widgets aos layouts
-        self.layout_principal.addWidget(self.mapa_label)
         
         layout_combobox = QHBoxLayout()
         layout_combobox.addStretch()
@@ -60,16 +77,26 @@ class MainWindow(QMainWindow):
         layout_combobox.addStretch()
         self.layout_principal.addLayout(layout_combobox)
         
-        layout_dados = QVBoxLayout()
-        layout_dados.addWidget(self.municipio_label)
-        layout_dados.addWidget(self.mortes_label)
-        layout_dados.addWidget(self.casos_label)
-        layout_dados.addWidget(self.letalidade_label)
-        self.layout_principal.addLayout(layout_dados)
+        # Frame para os Dados
+        self.frame_dados = QFrame(self.central_widget)
+        self.frame_dados.setStyleSheet("background-color: #E0E0E0; border-radius: 10px; padding: 10px;")
+        self.layout_dados = QVBoxLayout(self.frame_dados)
+        self.layout_principal.addWidget(self.frame_dados)
+        
+        # Rótulos para exibir os dados
+        self.municipio_label = QLabel("Município: ")
+        self.mortes_label = QLabel("Mortes: ")
+        self.casos_label = QLabel("Casos: ")
+        self.letalidade_label = QLabel("Letalidade: ")
+
+        self.layout_dados.addWidget(self.municipio_label)
+        self.layout_dados.addWidget(self.mortes_label)
+        self.layout_dados.addWidget(self.casos_label)
+        self.layout_dados.addWidget(self.letalidade_label)
         
         self.layout_principal.addStretch()
         
-        # 5. Conecta o evento da ComboBox ao método de exibição
+        # 4. Conecta o evento da ComboBox ao método de exibição
         self.buscar_cidade_combo.currentIndexChanged.connect(self.mostrar_dados_cidade)
 
     def mostrar_dados_cidade(self):
@@ -88,4 +115,3 @@ class MainWindow(QMainWindow):
                 self.mortes_label.setText("")
                 self.casos_label.setText("")
                 self.letalidade_label.setText("")
-
