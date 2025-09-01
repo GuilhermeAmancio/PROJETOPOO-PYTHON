@@ -8,6 +8,7 @@ import os
 from core.data_analyzer import AnalisadorDados
 from ui.data_window import DataWindow
 
+# Janela principal da aplicação, responsável pela interface do usuário e controle do fluxo.
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -15,7 +16,7 @@ class MainWindow(QMainWindow):
         # 1. Instância do Analisador de Dados
         self.analisador = AnalisadorDados()
         
-        # Carrega os dados na inicialização
+        # Carrega os dados do arquivo ao iniciar a aplicação.
         caminho_dados = os.path.join('data', 'DadosCovidSergipe.txt')
         self.analisador.carregar_dados(caminho_dados)
         
@@ -27,7 +28,7 @@ class MainWindow(QMainWindow):
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
         
-        # Aplica o estilo na janela principal e nos widgets
+        # Aplica estilos CSS para personalizar a aparência da interface.
         self.setStyleSheet("""
             QMainWindow {
                 background-color: #000;
@@ -64,12 +65,12 @@ class MainWindow(QMainWindow):
 
         self.layout_principal = QVBoxLayout(self.central_widget)
         
-        # Frame para o Mapa
+        # Frame para exibir o mapa.
         self.frame_mapa = QFrame(self.central_widget)
         self.layout_mapa = QVBoxLayout(self.frame_mapa)
         self.layout_principal.addWidget(self.frame_mapa, alignment=Qt.AlignmentFlag.AlignCenter)
         
-        # Imagem do mapa de Sergipe
+        # Carrega e exibe a imagem do mapa.
         self.mapa_label = QLabel()
         self.mapa_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         caminho_mapa = os.path.join('assets', 'mapa_sergipe.jpg')
@@ -81,11 +82,11 @@ class MainWindow(QMainWindow):
         
         self.layout_mapa.addWidget(self.mapa_label)
         
-        # Layout horizontal para a combobox e o botão
+        # Layout para os controles do usuário (ComboBox e botão Sair).
         self.layout_botoes = QHBoxLayout()
         self.layout_botoes.addStretch()
         
-        # ComboBox para a lista de cidades
+        # ComboBox populada com a lista de municípios.
         self.buscar_cidade_combo = QComboBox()
         self.buscar_cidade_combo.setPlaceholderText("Selecione uma cidade")
         self.buscar_cidade_combo.addItems(self.analisador.obter_lista_municipios())
@@ -93,7 +94,7 @@ class MainWindow(QMainWindow):
         self.buscar_cidade_combo.setFixedWidth(450)
         self.layout_botoes.addWidget(self.buscar_cidade_combo)
         
-        # Botão para sair da aplicação
+        # Botão para fechar a aplicação.
         self.sair_button = QPushButton("Sair")
         self.sair_button.setFixedWidth(100)
         self.layout_botoes.addWidget(self.sair_button)
@@ -103,15 +104,15 @@ class MainWindow(QMainWindow):
         self.layout_principal.addLayout(self.layout_botoes)
         self.layout_principal.addStretch()
         
-        # Variável para a janela de dados
+        # Referência para a janela de dados, inicializada como None.
         self.data_window = None
 
-        # 4. Conecta os eventos dos widgets aos métodos
+        # 4. Conecta os eventos dos widgets aos métodos correspondentes.
         self.buscar_cidade_combo.currentIndexChanged.connect(self.abrir_janela_dados)
         self.sair_button.clicked.connect(self.mostrar_aviso_saida)
 
+    # Método para exibir um aviso de confirmação antes de sair.
     def mostrar_aviso_saida(self):
-        # Cria a janela de aviso
         aviso = QMessageBox()
         aviso.setWindowTitle("Aviso")
         aviso.setText("Você tem certeza que deseja sair?")
@@ -119,16 +120,14 @@ class MainWindow(QMainWindow):
         aviso.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         aviso.setDefaultButton(QMessageBox.StandardButton.No)
 
-        # Mapeia a cor do tema para a janela de aviso
         aviso.setStyleSheet("background-color: #333; color: white;")
 
-        # Executa a janela e pega a resposta
         resposta = aviso.exec()
 
-        # Se a resposta for "Sim", fecha a aplicação
         if resposta == QMessageBox.StandardButton.Yes:
             self.close()
             
+    # Método para abrir a janela de dados do município selecionado.
     def abrir_janela_dados(self):
         nome_cidade = self.buscar_cidade_combo.currentText()
         if nome_cidade:

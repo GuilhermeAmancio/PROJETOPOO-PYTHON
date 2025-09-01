@@ -3,6 +3,7 @@
 from PyQt6.QtWidgets import QMainWindow, QLabel, QVBoxLayout, QWidget
 from PyQt6.QtCore import Qt
 
+# Janela para exibir os dados de COVID-19 de um município.
 class DataWindow(QMainWindow):
     def __init__(self, nome_cidade, dados_cidade):
         super().__init__()
@@ -41,21 +42,22 @@ class DataWindow(QMainWindow):
         
         # Rótulos para os dados, com formatação corrigida para vírgula
         
-        # Números inteiros (mortes e casos) usam ponto como separador de milhar
+        # Formata números inteiros com ponto como separador de milhar.
         self.mortes_label = QLabel(f"Mortes: {dados_cidade.mortes:,}".replace(",", "."))
         self.casos_label = QLabel(f"Casos: {dados_cidade.casos:,}".replace(",", "."))
         
-        # Números de ponto flutuante (letalidade e por 100k) usam vírgula como separador decimal
+        # Formata números de ponto flutuante com duas casas decimais e vírgula.
         letalidade_formatada = f"{dados_cidade.letalidade:.2f}".replace(".", ",")
         self.letalidade_label = QLabel(f"Letalidade: {letalidade_formatada}%")
         
         mortes_100k_formatado = f"{dados_cidade.mortes_por_100_mil_habitantes:.2f}".replace(".", ",")
         self.mortes_100k_label = QLabel(f"Mortes por 100 mil habitantes: {mortes_100k_formatado}")
         
+        # Lógica complexa para formatar um número com separador de milhar e decimal para o padrão brasileiro.
         casos_100k_formatado = f"{dados_cidade.casos_por_100_mil_habitantes:,.2f}".replace(".", "X").replace(",", ".").replace("X", ",")
         self.casos_100k_label = QLabel(f"Casos por 100 mil habitantes: {casos_100k_formatado}")
         
-        # Adiciona os widgets ao layout principal
+        # Adiciona os widgets ao layout principal.
         self.layout_principal.addWidget(self.mortes_label)
         self.layout_principal.addWidget(self.casos_label)
         self.layout_principal.addWidget(self.letalidade_label)
