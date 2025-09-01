@@ -1,5 +1,17 @@
 # POOprojeto
 
+Dupla: Pietro Oliveira Lima e Guilherme Ferreira Amâncio
+
+*Nota
+Como durante o desenvolvimento do projeto utilizamos uma pasta de teste separada do github, quando finalizamos notamos que quando tentávamos executar a aplicação python na pasta do github, esta dava erros que não conseguíamos resolver, mas quando resolvemos testar criando um repositório separado só para a aplicação python, funcionou. Então resolvemos deixar como 2 repositórios separados para garantir o funcionamento de ambos. O ReadMe de ambos os repositórios contém todas as informações, então qualquer um pode ser lido para compreender
+
+links dos repositórios:
+Repositório Java:
+https://github.com/PietroLima04/POOprojeto
+
+Repositório Python:
+https://github.com/GuilhermeAmancio/PROJETOPOO-PYTHON
+
 O conceito do projeto era analisar os dados da covid no estado de Sergipe. Para isso, criamos apps em java e python que possuem o mesmo conceito, que por meio de uma lista das cidades, ao escolher uma delas, abre-se uma nova aba com as informações relevantes quanto ao covid naquela cidade. Devido as diferenças nas linguagens, conseguimos implementar em python todas as cidades, mas para manter um projeto mais conciso e organizado com java, decidimos utilizar as 10 cidades mais populosas nesta versão, mas em compensação, conseguimos tranquilamente implementar os gráficos na aplicação java por meio do scenebuilder, enquanto que, devido a uma certa dificuldade, não os implementamos na aplicação python.
 
 A fonte utilizada foi: dados tabulados pelo pesquisador Wesley Cota, da UFV, com base em números das secretarias estaduais da Saúde coletados pelo Brasil.IO. O projeto 'Modelagem matemática da disseminação geográfica da Covid-19' faz parte do Programa de Combate a Epidemias da Coordenação de Aperfeiçoamento de Pessoal de Nível Superior (Capes). A base também é usada pela universidade Johns Hopkins, referência mundial no acompanhamento dos dados da pandemia.
